@@ -3,7 +3,7 @@
 use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
 
 return [
-    /*
+    /* test commit
      * Which routes to document. String or array form; use Scramble::routes() for custom selection.
      *
      * 'api_path' => [
