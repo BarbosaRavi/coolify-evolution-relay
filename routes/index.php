@@ -14,4 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::prefix('/auth')->group(base_path('routes/api/auth.php'));
+Route::prefix('/project')->group(base_path('routes/api/project.php'));
+
 Route::prefix('/deploy')->group(base_path('routes/api/deploy.php'));
+Route::prefix('/github')->group(base_path('routes/api/github.php'));
