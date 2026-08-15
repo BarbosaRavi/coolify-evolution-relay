@@ -174,11 +174,16 @@ return [
      * ],
      */
     // 'security_strategy' => \Dedoc\Scramble\SecurityDocumentation\MiddlewareAuthSecurityStrategy::class,
+    /*
+     * `scheme` é omitido de propósito: MiddlewareAuthSecurityStrategy já usa
+     * `SecurityScheme::http('bearer')` por padrão. Declará-lo aqui colocaria um
+     * objeto no config, e `php artisan config:cache` quebra ao serializar
+     * (o objeto não implementa `__set_state`), derrubando o contêiner no boot.
+     */
     'security_strategy' => [
         \Dedoc\Scramble\SecurityDocumentation\MiddlewareAuthSecurityStrategy::class,
         [
             'middleware' => ['auth.api'],
-            'scheme' => \Dedoc\Scramble\Support\Generator\SecurityScheme::http('bearer'),
         ],
-    ]
+    ],
 ];
