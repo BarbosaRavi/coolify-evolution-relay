@@ -18,6 +18,7 @@ class DeployNotifyRequest extends FormRequest
         return [
             'attachments'                  => ['required', 'array', 'min:1'],
             'attachments.0.title'          => ['nullable', 'string'],
+            'attachments.0.color'          => ['nullable', 'string'],
             'attachments.0.text'           => ['nullable', 'string'],
             'attachments.0.fields'         => ['nullable', 'array'],
             'attachments.0.fields.*.title' => ['required_with:attachments.0.fields', 'string'],
@@ -30,6 +31,7 @@ class DeployNotifyRequest extends FormRequest
         return [
             'attachments'          => 'Anexos',
             'attachments.0.title'  => 'Título',
+            'attachments.0.color'  => 'Cor',
             'attachments.0.text'   => 'Descrição',
             'attachments.0.fields' => 'Campos',
         ];

@@ -17,6 +17,18 @@ class DeployService
      */
     private const ALLOWED_FIELDS = ['project', 'projeto', 'environment', 'ambiente'];
 
+    private const SUCCESS_EMOJI = '✅';
+
+    private const FAILURE_EMOJI = '❌';
+
+    /**
+     * Palavras que aparecem no título enviado pelo Coolify e indicam falha.
+     * Verificadas antes das de sucesso, já que "deployment failed" contém "deploy".
+     */
+    private const FAILURE_WORDS = ['fail', 'error', 'falha', 'erro', 'unhealthy', 'stopped', 'parado'];
+
+    private const SUCCESS_WORDS = ['success', 'sucesso', 'deployed', 'healthy', 'implantad', 'restored'];
+
     public function __construct(protected ProjectService $projects) {}
 
     public function notify(array $data): void
@@ -46,6 +58,11 @@ class DeployService
     private function buildMessage(array $attachment, Collection $fields): string
     {
         $status = trim((string) ($attachment['title'] ?? 'Coolify'));
+        $emoji = $this->statusEmoji($attachment, $status);
+
+        if ($emoji !== '') {
+            $status = "{$emoji} {$status}";
+        }
 
         $details = $fields
             ->filter(fn (array $field): bool => in_array(
@@ -74,6 +91,36 @@ class DeployService
             ->reject(fn (string $line): bool => (bool) preg_match('/<[^|>\s]+\|[^>]*>/', $line))
             ->filter(fn (string $line): bool => filled(trim($line)))
             ->implode("\n");
+    }
+
+    /**
+     * Escolhe o emoji do status a partir do título do Coolify e, se ele não for
+     * conclusivo, da cor do anexo. Retorna string vazia quando não dá para saber
+     * se o deploy deu certo, para não marcar uma falha como sucesso.
+     */
+    private function statusEmoji(array $attachment, string $status): string
+    {
+        if (Str::contains($status, [self::SUCCESS_EMOJI, self::FAILURE_EMOJI])) {
+            return '';
+        }
+
+        $title = Str::lower($status);
+
+        if (Str::contains($title, self::FAILURE_WORDS)) {
+            return self::FAILURE_EMOJI;
+        }
+
+        if (Str::contains($title, self::SUCCESS_WORDS)) {
+            return self::SUCCESS_EMOJI;
+        }
+
+        $color = Str::lower(trim((string) ($attachment['color'] ?? '')));
+
+        return match (true) {
+            Str::contains($color, ['danger', 'red', 'ff0000']) => self::FAILURE_EMOJI,
+            Str::contains($color, ['good', 'green', '00ff00', '008000']) => self::SUCCESS_EMOJI,
+            default => '',
+        };
     }
 
     private function resolveProject(Collection $fields): ?Project

@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 
 class GithubService
 {
+    private const PUSH_EMOJI = '🙏';
+
     public function __construct(protected ProjectService $projects) {}
 
     public function push(array $data, string $event): void
@@ -45,7 +47,7 @@ class GithubService
             ));
 
         $text = collect([
-            "*Novo push em {$repository}*",
+            self::PUSH_EMOJI." *Novo push em {$repository}*",
             "*Branch:* {$branch}",
             '*Autor:* '.($data['pusher']['name'] ?? 'desconhecido'),
             '',
